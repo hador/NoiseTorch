@@ -55,6 +55,7 @@ func main() {
 	var loadOutput bool
 	var threshold int
 	var list bool
+	var check bool
 
 	flag.IntVar(&pulsepid, "removerlimit", -1, "for internal use only")
 	flag.BoolVar(&setcap, "setcap", false, "for internal use only")
@@ -64,6 +65,7 @@ func main() {
 	flag.BoolVar(&unload, "u", false, "Unload supressor")
 	flag.IntVar(&threshold, "t", -1, "Voice activation threshold")
 	flag.BoolVar(&list, "l", false, "List available PulseAudio devices")
+	flag.BoolVar(&check, "c", false, "Check supressor status")
 	flag.Parse()
 
 	if setcap {
@@ -114,6 +116,13 @@ func main() {
 	}
 
 	ctx.paClient = paClient
+
+	if check {
+		if supressorState(&ctx) == loaded {
+			os.Exit(0)
+		}
+		os.Exit(1)
+	}
 
 	if list {
 		fmt.Println("Sources:")
